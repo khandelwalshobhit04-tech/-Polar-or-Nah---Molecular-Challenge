@@ -199,16 +199,30 @@ const App = () => {
              </div>
           )}
         </div>
-        {phase !== GamePhase.MENU && (
-          <div className="flex flex-col items-end">
-             <div className="text-2xl font-bold text-yellow-400 drop-shadow-lg font-mono">
-              SCORE: {score}
-            </div>
-            <div className={`text-xl font-bold font-mono ${timeLeft < 10 ? 'text-red-500 animate-pulse' : 'text-white'}`}>
-              TIME: {timeLeft}s
-            </div>
-          </div>
-        )}
+
+        {/* Right Side Controls */}
+        <div className="flex flex-col items-end pointer-events-auto">
+          {/* Back to Home Button - Always Visible */}
+          <a 
+            href="https://ai.studio/apps/drive/1hh2BRHWm0KB4Wej4z3tSpDYygw3-LI5k?fullscreenApplet=true" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="mb-2 px-3 py-1 bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-xs rounded border border-slate-600 transition-colors backdrop-blur-sm flex items-center gap-1"
+          >
+            <span>🏠</span> Home
+          </a>
+
+          {phase !== GamePhase.MENU && (
+             <>
+                <div className="text-2xl font-bold text-yellow-400 drop-shadow-lg font-mono">
+                  SCORE: {score}
+                </div>
+                <div className={`text-xl font-bold font-mono ${timeLeft < 10 ? 'text-red-500 animate-pulse' : 'text-white'}`}>
+                  TIME: {timeLeft}s
+                </div>
+             </>
+          )}
+        </div>
       </div>
 
       {/* 3D CANVAS */}

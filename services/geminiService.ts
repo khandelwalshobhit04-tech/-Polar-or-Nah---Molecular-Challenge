@@ -3,8 +3,12 @@ import { MoleculeData } from "../types";
 
 let ai: GoogleGenAI | null = null;
 
-if (process.env.API_KEY) {
-  ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// In Vite builds, 'process.env.API_KEY' is replaced by the actual string value.
+// We cast to any to satisfy TypeScript if strict types for process are missing.
+const apiKey = process.env.API_KEY;
+
+if (apiKey) {
+  ai = new GoogleGenAI({ apiKey });
 } else {
   console.warn("API_KEY is not defined. Gemini features will be disabled.");
 }
