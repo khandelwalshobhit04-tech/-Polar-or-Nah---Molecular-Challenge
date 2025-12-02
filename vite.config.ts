@@ -7,7 +7,10 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     define: {
       // Safely replace process.env.API_KEY with the environment variable during build
-      'process.env.API_KEY': JSON.stringify(env.API_KEY),
+      // Default to empty string if undefined to prevent JSON.stringify(undefined) issues
+      'process.env.API_KEY': JSON.stringify(env.API_KEY || ''),
+      // Define 'process.env' object to prevent crashes if third-party libs try to access it
+      'process.env': {} 
     },
     build: {
       outDir: 'dist',
