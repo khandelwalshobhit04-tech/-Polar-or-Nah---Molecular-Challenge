@@ -3,8 +3,9 @@ import { MoleculeData } from "../types";
 
 let ai: GoogleGenAI | null = null;
 
-// In Vite builds, 'process.env.API_KEY' is replaced by the actual string value.
-// We cast to any to satisfy TypeScript if strict types for process are missing.
+// In Vite builds, 'process.env.API_KEY' is replaced by the actual string value via define.
+// We use @ts-ignore to prevent TypeScript from complaining about process if types aren't loaded.
+// @ts-ignore
 const apiKey = process.env.API_KEY;
 
 if (apiKey) {

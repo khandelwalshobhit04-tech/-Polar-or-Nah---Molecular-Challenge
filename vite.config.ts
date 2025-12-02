@@ -6,11 +6,9 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     define: {
-      // Safely replace process.env.API_KEY with the environment variable during build
-      // Default to empty string if undefined to prevent JSON.stringify(undefined) issues
+      // Safely replace process.env.API_KEY with the actual string value during build.
+      // We rely on the index.html polyfill for other process accesses.
       'process.env.API_KEY': JSON.stringify(env.API_KEY || ''),
-      // Define 'process.env' object to prevent crashes if third-party libs try to access it
-      'process.env': {} 
     },
     build: {
       outDir: 'dist',
