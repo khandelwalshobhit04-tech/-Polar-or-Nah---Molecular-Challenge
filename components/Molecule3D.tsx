@@ -1,3 +1,4 @@
+
 import React, { useRef, useState, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Sphere, Cylinder, Text, Html, Cone, Billboard } from '@react-three/drei';
@@ -20,7 +21,6 @@ interface AtomMeshProps {
   electronegativity: number;
 }
 
-// Reusable Atom Component
 const AtomMesh: React.FC<AtomMeshProps> = ({ 
   position, 
   element, 
@@ -40,7 +40,6 @@ const AtomMesh: React.FC<AtomMeshProps> = ({
         />
       </Sphere>
       
-      {/* Electronegativity Label - Floating above atom */}
       <Html position={[0, 0, 0]} center distanceFactor={10} style={{ pointerEvents: 'none' }}>
         <div 
           className={`
@@ -56,10 +55,9 @@ const AtomMesh: React.FC<AtomMeshProps> = ({
         </div>
       </Html>
 
-      {/* Element Symbol - Always facing camera */}
-      <Billboard follow={true} lockX={false} lockY={false} lockZ={false}>
+      <Billboard follow={true}>
         <Text
-          position={[0, 0, style.radius + 0.1]} // Slightly in front of the sphere surface
+          position={[0, 0, style.radius + 0.1]}
           fontSize={style.radius * 0.8}
           color={textColor}
           anchorX="center"
@@ -85,7 +83,6 @@ interface BondMeshProps {
   atomB: AtomData;
 }
 
-// Interactive Bond Component with Dipole Arrow
 const BondMesh: React.FC<BondMeshProps> = ({ 
   start, 
   end, 
@@ -102,57 +99,34 @@ const BondMesh: React.FC<BondMeshProps> = ({
   const length = direction.length();
   const midPoint = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
   
-  // Orientation
   const quaternion = new THREE.Quaternion();
   const up = new THREE.Vector3(0, 1, 0);
-  quaternion.setFromUnitVectors(up, direction.normalize());
+  quaternion.setFromUnitVectors(up, direction.clone().normalize());
 
-  // Determine actual Correct Dipole for this bond
   const diff = atomB.electronegativity - atomA.electronegativity;
   let correctDipole = DipoleDirection.NONE;
-  // Using 0.4 threshold for polar bond visualization
   if (Math.abs(diff) >= 0.4) {
     correctDipole = diff > 0 ? DipoleDirection.A_TO_B : DipoleDirection.B_TO_A;
   }
 
-  // Visual Logic
   let displayDirection = userDipole;
-  let arrowColor = "#22d3ee"; // Default Cyan
+  let arrowColor = "#22d3ee";
 
   if (showResult) {
-    // In result mode, ALWAYS show the correct dipole
     displayDirection = correctDipole;
-
-    if (userDipole === correctDipole) {
-      arrowColor = "#4ade80"; // Green-400 (Correct!)
-    } else {
-      arrowColor = "#f87171"; // Red-400 (Wrong/Missed)
-    }
+    arrowColor = (userDipole === correctDipole) ? "#4ade80" : "#f87171";
   }
 
-  let showArrow = false;
-  let arrowFlip = false;
-
-  if (displayDirection === DipoleDirection.A_TO_B) {
-    showArrow = true;
-    arrowFlip = false;
-  } else if (displayDirection === DipoleDirection.B_TO_A) {
-    showArrow = true;
-    arrowFlip = true;
-  }
-
-  // Arrow rotation relative to bond
+  let showArrow = displayDirection !== DipoleDirection.NONE;
+  let arrowFlip = displayDirection === DipoleDirection.B_TO_A;
   const arrowRotation = arrowFlip ? [Math.PI, 0, 0] : [0, 0, 0];
-  
-  // Arrow Geometry Constants
-  const arrowOffset = 0.25; // Float to the side of the bond
-  const arrowLength = Math.max(0.5, length - 0.7); // Fit between atoms
+  const arrowOffset = 0.25;
+  const arrowLength = Math.max(0.5, length - 0.7);
   const headLength = 0.25;
   const shaftLength = arrowLength - headLength;
 
   return (
     <group position={midPoint} quaternion={quaternion}>
-      {/* Invisible wider hit area for easier clicking on mobile */}
       <mesh 
         onClick={(e) => { e.stopPropagation(); !showResult && onClick(); }}
         onPointerOver={() => !showResult && setHovered(true)}
@@ -163,7 +137,6 @@ const BondMesh: React.FC<BondMeshProps> = ({
         <meshBasicMaterial />
       </mesh>
 
-      {/* Visible Bond */}
       <Cylinder args={[0.08, 0.08, length, 12]} castShadow receiveShadow>
         <meshStandardMaterial 
           color={(hovered && !showResult) ? '#facc15' : '#cbd5e1'} 
@@ -172,28 +145,16 @@ const BondMesh: React.FC<BondMeshProps> = ({
         />
       </Cylinder>
 
-      {/* Dipole Arrow Visual */}
       {showArrow && (
         <group rotation={arrowRotation as any} position={[arrowOffset, 0, 0]}>
-           {/* Cross at tail (Positive End) */}
            <mesh position={[0, -arrowLength/2, 0]}>
              <boxGeometry args={[0.2, 0.05, 0.05]} />
              <meshStandardMaterial color={arrowColor} emissive={arrowColor} emissiveIntensity={0.6} />
            </mesh>
-           
-           {/* Arrow Shaft */}
-           <Cylinder 
-            args={[0.03, 0.03, shaftLength, 8]} 
-            position={[0, -headLength/2, 0]}
-           >
+           <Cylinder args={[0.03, 0.03, shaftLength, 8]} position={[0, -headLength/2, 0]}>
              <meshStandardMaterial color={arrowColor} emissive={arrowColor} emissiveIntensity={0.6} />
            </Cylinder>
-           
-           {/* Arrow Head (Negative End) */}
-           <Cone 
-            args={[0.12, headLength, 16]} 
-            position={[0, arrowLength/2 - headLength/2, 0]}
-           >
+           <Cone args={[0.12, headLength, 16]} position={[0, arrowLength/2 - headLength/2, 0]}>
              <meshStandardMaterial color={arrowColor} emissive={arrowColor} emissiveIntensity={0.6} />
            </Cone>
         </group>
@@ -202,61 +163,38 @@ const BondMesh: React.FC<BondMeshProps> = ({
   );
 };
 
-// Resultant Net Dipole Component
 const ResultantDipole = ({ molecule }: { molecule: MoleculeData }) => {
   const netDipole = useMemo(() => {
     const net = new THREE.Vector3(0, 0, 0);
-    // Calculate simple vector sum weighted by EN difference
     molecule.bonds.forEach(bond => {
       const atomA = molecule.atoms[bond.atomA];
       const atomB = molecule.atoms[bond.atomB];
       const posA = new THREE.Vector3(atomA.position.x, atomA.position.y, atomA.position.z);
       const posB = new THREE.Vector3(atomB.position.x, atomB.position.y, atomB.position.z);
-      
       const diff = atomB.electronegativity - atomA.electronegativity;
       const bondDir = new THREE.Vector3().subVectors(posB, posA).normalize();
-      
-      // Vector adds towards higher EN
-      if (diff !== 0) {
-        net.add(bondDir.multiplyScalar(diff));
-      }
+      if (diff !== 0) net.add(bondDir.multiplyScalar(diff));
     });
     return net;
   }, [molecule]);
 
   const length = netDipole.length();
-  
-  if (length < 0.1 || !molecule.isPolar) return null; // Too small or non-polar
+  if (length < 0.1 || !molecule.isPolar) return null;
 
-  const origin = new THREE.Vector3(0, 0, 0); // Assuming center is roughly 0,0,0
+  const origin = new THREE.Vector3(0, 0, 0);
   const dir = netDipole.clone().normalize();
-  
-  // Calculate quaternion for orientation
   const quaternion = new THREE.Quaternion();
   const up = new THREE.Vector3(0, 1, 0);
   quaternion.setFromUnitVectors(up, dir);
 
   return (
     <group position={origin} quaternion={quaternion}>
-      {/* Glowing Shaft */}
       <Cylinder args={[0.1, 0.1, 3, 16]} position={[0, 1.5, 0]}>
-        <meshStandardMaterial 
-          color="#fbbf24" 
-          emissive="#f59e0b" 
-          emissiveIntensity={2} 
-          transparent 
-          opacity={0.8} 
-        />
+        <meshStandardMaterial color="#fbbf24" emissive="#f59e0b" emissiveIntensity={2} transparent opacity={0.8} />
       </Cylinder>
-      {/* Glowing Head */}
       <Cone args={[0.4, 0.8, 16]} position={[0, 3, 0]}>
-        <meshStandardMaterial 
-          color="#fbbf24" 
-          emissive="#f59e0b" 
-          emissiveIntensity={2} 
-        />
+        <meshStandardMaterial color="#fbbf24" emissive="#f59e0b" emissiveIntensity={2} />
       </Cone>
-      
       <Html position={[1, 1.5, 0]} center>
         <div className="bg-yellow-500/80 text-black px-2 py-1 rounded font-bold whitespace-nowrap backdrop-blur-md">
           NET DIPOLE
@@ -266,18 +204,11 @@ const ResultantDipole = ({ molecule }: { molecule: MoleculeData }) => {
   );
 };
 
-// Animated Lone Pair Orbital
 const LonePairMesh: React.FC<{ position: THREE.Vector3 }> = ({ position }) => {
   const meshRef = useRef<THREE.Mesh>(null);
-  const groupRef = useRef<THREE.Group>(null);
-
-  // Orient the orbital lobe to point away from center (assuming center is 0,0,0)
-  // We want the local Y axis (elongated axis) to point along the position vector
   const quaternion = useMemo(() => {
      const posVec = position.clone();
-     // If position is at origin, default to up, else point along vector from origin
      if (posVec.lengthSq() < 0.001) return new THREE.Quaternion();
-     
      const up = new THREE.Vector3(0, 1, 0);
      const dir = posVec.normalize();
      const q = new THREE.Quaternion();
@@ -285,21 +216,12 @@ const LonePairMesh: React.FC<{ position: THREE.Vector3 }> = ({ position }) => {
      return q;
   }, [position]);
 
-  // Breathing animation
   useFrame((state) => {
     if (meshRef.current) {
       const t = state.clock.elapsedTime;
-      
-      // Pulse scale (breathing)
       const scaleBase = 1;
       const scalePulse = Math.sin(t * 2.5) * 0.15; 
-      meshRef.current.scale.set(
-        scaleBase + scalePulse, 
-        (scaleBase + scalePulse) * 1.4, // Elongate along local Y axis to look like a lobe
-        scaleBase + scalePulse
-      );
-
-      // Pulse opacity/emissive for "energy" feel
+      meshRef.current.scale.set(scaleBase + scalePulse, (scaleBase + scalePulse) * 1.4, scaleBase + scalePulse);
       const material = meshRef.current.material as THREE.MeshPhysicalMaterial;
       if (material) {
         material.emissiveIntensity = 0.6 + Math.sin(t * 3) * 0.3;
@@ -309,21 +231,9 @@ const LonePairMesh: React.FC<{ position: THREE.Vector3 }> = ({ position }) => {
   });
 
   return (
-    <group position={position} quaternion={quaternion} ref={groupRef}>
-      {/* Offset the sphere slightly along Y so the base is near the atom center */}
+    <group position={position} quaternion={quaternion}>
       <Sphere ref={meshRef} args={[0.35, 32, 32]} position={[0, 0.2, 0]}>
-        <meshPhysicalMaterial
-          color="#d8b4fe" // Light Purple
-          emissive="#a855f7" // Purple-500
-          emissiveIntensity={0.6}
-          transparent
-          opacity={0.6}
-          roughness={0.1}
-          metalness={0.1}
-          transmission={0.1}
-          thickness={0.5}
-          depthWrite={false} // Prevents z-buffer writing for better transparency blending
-        />
+        <meshPhysicalMaterial color="#d8b4fe" emissive="#a855f7" emissiveIntensity={0.6} transparent opacity={0.6} roughness={0.1} metalness={0.1} transmission={0.1} thickness={0.5} depthWrite={false} />
       </Sphere>
     </group>
   );
@@ -337,23 +247,11 @@ export default function Molecule3D({
   powerUps 
 }: Molecule3DProps) {
   const groupRef = useRef<THREE.Group>(null);
-  const [initialRotation] = useState(() => {
-    // Random rotation on mount to prevent memorization
-    const euler = new THREE.Euler(
-      Math.random() * Math.PI * 2,
-      Math.random() * Math.PI * 2,
-      Math.random() * Math.PI * 2
-    );
-    return euler;
-  });
+  const [initialRotation] = useState(() => new THREE.Euler(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI));
 
-  // Animation Loop
   useFrame((state, delta) => {
     if (groupRef.current) {
-       // Continuous rotation
        groupRef.current.rotation.y += delta * 0.1;
-
-       // Smoothly shift vertical position: Move UP when result is shown
        const targetY = showResult ? 2.5 : 0; 
        groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, targetY, delta * 3);
     }
@@ -363,8 +261,14 @@ export default function Molecule3D({
     <group ref={groupRef} rotation={initialRotation}>
       <ambientLight intensity={0.6} />
       <pointLight position={[10, 10, 10]} intensity={1} />
-      <pointLight position={[-10, -10, -10]} intensity={0.5} />
       
+      {/* 3D LABEL FOR THE MOLECULE */}
+      <Html position={[0, 3, 0]} center>
+         <div className="bg-white/10 backdrop-blur-md border border-white/20 px-3 py-1 rounded-full text-white font-bold text-xs pointer-events-none select-none uppercase tracking-widest whitespace-nowrap">
+           {molecule.name} • {molecule.formula}
+         </div>
+      </Html>
+
       {molecule.atoms.map((atom) => (
         <AtomMesh 
           key={atom.id} 
@@ -378,15 +282,12 @@ export default function Molecule3D({
       {molecule.bonds.map((bond) => {
         const atomA = molecule.atoms[bond.atomA];
         const atomB = molecule.atoms[bond.atomB];
-        const start = new THREE.Vector3(atomA.position.x, atomA.position.y, atomA.position.z);
-        const end = new THREE.Vector3(atomB.position.x, atomB.position.y, atomB.position.z);
-
         return (
           <BondMesh
             key={bond.id}
             id={bond.id}
-            start={start}
-            end={end}
+            start={new THREE.Vector3(atomA.position.x, atomA.position.y, atomA.position.z)}
+            end={new THREE.Vector3(atomB.position.x, atomB.position.y, atomB.position.z)}
             userDipole={userDipoles[bond.id] || DipoleDirection.NONE}
             onClick={() => onBondClick(bond.id)}
             showResult={showResult}
@@ -396,12 +297,8 @@ export default function Molecule3D({
         );
       })}
 
-      {/* Lone Pairs */}
       {molecule.lonePairs && molecule.lonePairs.map((lp) => (
-        <LonePairMesh 
-          key={lp.id} 
-          position={new THREE.Vector3(lp.position.x, lp.position.y, lp.position.z)} 
-        />
+        <LonePairMesh key={lp.id} position={new THREE.Vector3(lp.position.x, lp.position.y, lp.position.z)} />
       ))}
 
       {showResult && molecule.isPolar && (

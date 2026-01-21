@@ -1,19 +1,6 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { MoleculeData } from "../types";
 
-let ai: GoogleGenAI | null = null;
-
-// In Vite builds, 'process.env.API_KEY' is replaced by the actual string value via define.
-// We use @ts-ignore to prevent TypeScript from complaining about process if types aren't loaded.
-// @ts-ignore
-const apiKey = process.env.API_KEY;
-
-if (apiKey) {
-  ai = new GoogleGenAI({ apiKey });
-} else {
-  console.warn("API_KEY is not defined. Gemini features will be disabled.");
-}
-
 export interface ExplanationResult {
   remark: string;
   explanation: string;
@@ -23,8 +10,10 @@ export const getMoleculeExplanation = async (
   molecule: MoleculeData,
   wasCorrect: boolean
 ): Promise<ExplanationResult> => {
-  // Fallback if no AI or API Key
-  if (!ai) {
+  const apiKey = process.env.API_KEY;
+
+  if (!apiKey) {
+    console.warn("API_KEY is missing. Using local fallback for explanation.");
     return {
       remark: wasCorrect ? "Correct!" : "Incorrect!",
       explanation: wasCorrect 
@@ -32,6 +21,8 @@ export const getMoleculeExplanation = async (
         : `Look closely at the ${molecule.geometryName} geometry. ${molecule.isPolar ? 'The asymmetry creates a net dipole.' : 'The symmetry cancels out individual dipoles.'}`
     };
   }
+
+  const ai = new GoogleGenAI({ apiKey });
 
   const prompt = `
     You are a chemistry tutor for a game called "Polar or Nah?".
@@ -51,7 +42,7 @@ export const getMoleculeExplanation = async (
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-3-flash-preview",
       contents: prompt,
       config: {
         responseMimeType: "application/json",
