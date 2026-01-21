@@ -19,16 +19,13 @@ const App = () => {
   const [isLoadingExplanation, setIsLoadingExplanation] = useState(false);
   const [timeLeft, setTimeLeft] = useState(60);
   
-  // Power Ups State
   const [powerUps, setPowerUps] = useState({
     enScanner: false,
     showHint: false,
   });
 
-  // Derived state
   const currentMolecule = MOLECULES[moleculeIndex];
 
-  // Timer Effect
   useEffect(() => {
     let timer: any;
     if (phase === GamePhase.BOND_SETUP || phase === GamePhase.POLARITY_DECISION) {
@@ -142,14 +139,14 @@ const App = () => {
       {/* HEADER HUD */}
       <div className="absolute top-0 w-full z-10 flex justify-between items-start p-4 bg-gradient-to-b from-black/90 to-transparent pointer-events-none">
         <div className="flex flex-col items-start gap-1">
-          <h1 className="text-xl font-bold text-cyan-400 font-mono tracking-widest drop-shadow-md">LEVEL 5</h1>
+          <h1 className="text-xl font-bold text-cyan-400 font-mono tracking-widest drop-shadow-md uppercase">Level 4</h1>
           {phase !== GamePhase.MENU && (
              <div className="flex flex-col gap-2">
                <div className="text-sm text-slate-300 font-mono">
-                 MOLECULE {moleculeIndex + 1}/{MOLECULES.length} • {currentMolecule?.difficulty}
+                 SYSTEM {moleculeIndex + 1}/{MOLECULES.length} • {currentMolecule?.difficulty}
                </div>
                <div className="flex items-center gap-2">
-                 <div className="bg-cyan-500/20 backdrop-blur-md px-4 py-2 rounded-lg border border-cyan-400/30 flex flex-col">
+                 <div className="bg-cyan-500/20 backdrop-blur-md px-4 py-2 rounded-lg border border-cyan-400/30 flex flex-col shadow-inner">
                     <span className="text-white font-black text-xl leading-none uppercase tracking-tight">{currentMolecule.name}</span>
                     <span className="text-cyan-300 font-mono text-sm font-bold">{currentMolecule.formula}</span>
                  </div>
@@ -162,11 +159,7 @@ const App = () => {
           )}
         </div>
 
-        <div className="flex flex-col items-end pointer-events-auto">
-          <a href="https://ai.studio/apps/drive/1hh2BRHWm0KB4Wej4z3tSpDYygw3-LI5k?fullscreenApplet=true" target="_blank" rel="noopener noreferrer"
-            className="mb-2 px-3 py-1 bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-xs rounded border border-slate-600 transition-colors backdrop-blur-sm flex items-center gap-1">
-            <span>🏠</span> Home
-          </a>
+        <div className="flex flex-col items-end pointer-events-none">
           {phase !== GamePhase.MENU && (
              <>
                 <div className="text-2xl font-bold text-yellow-400 drop-shadow-lg font-mono">SCORE: {score}</div>
@@ -197,7 +190,7 @@ const App = () => {
 
         {phase === GamePhase.BOND_SETUP && (
           <div className="absolute top-36 left-1/2 -translate-x-1/2 bg-black/60 px-4 py-2 rounded-full border border-cyan-500/50 backdrop-blur-sm animate-pulse pointer-events-none text-center min-w-[280px]">
-            <span className="text-cyan-300 font-bold block text-sm">STEP 1</span> Tap bonds to draw dipoles
+            <span className="text-cyan-300 font-bold block text-sm">STEP 1</span> Draw Dipole Vectors
           </div>
         )}
 
@@ -206,7 +199,7 @@ const App = () => {
             <div className="flex items-start gap-3">
                <span className="text-2xl">💡</span>
                <div>
-                  <h4 className="font-bold text-purple-200 text-sm mb-1">HINT</h4>
+                  <h4 className="font-bold text-purple-200 text-sm mb-1">INTEL HINT</h4>
                   <p className="text-white text-sm leading-relaxed">{currentMolecule.hint}</p>
                </div>
             </div>
@@ -220,15 +213,15 @@ const App = () => {
           {phase === GamePhase.MENU && (
             <div className="w-full max-w-2xl flex flex-col items-center gap-6 mb-8 animate-fade-in-up px-4">
               <div className="text-center">
-                <h2 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 animate-float mb-2">
-                  LEVEL 5
+                <h2 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-500 animate-float mb-2 tracking-tighter uppercase">
+                  Level 4
                 </h2>
-                <p className="text-slate-400 text-lg font-light tracking-wide italic">POLAR OR NAH? — THE CHALLENGE</p>
+                <p className="text-slate-400 text-lg font-light tracking-widest italic uppercase">Polar or Nah? — Molecular Supremacy</p>
               </div>
 
               <div className="bg-slate-800/60 backdrop-blur-md p-6 rounded-2xl border border-slate-600/50 shadow-2xl w-full text-left">
-                <h3 className="text-cyan-300 font-bold text-lg mb-4 flex items-center gap-2">
-                  <span className="text-xl">🔬</span> MISSION BRIEFING
+                <h3 className="text-cyan-300 font-bold text-lg mb-4 flex items-center gap-2 uppercase tracking-wide">
+                  <span className="text-xl">🔬</span> Mission Brief
                 </h3>
                 <div className="space-y-4 text-slate-200">
                   <div className="flex gap-4">
@@ -237,8 +230,8 @@ const App = () => {
                       <div className="w-0.5 h-full bg-slate-700"></div>
                     </div>
                     <div className="pb-2">
-                      <h4 className="font-bold text-white text-sm">SET BOND DIPOLES</h4>
-                      <p className="text-xs text-slate-400 leading-snug">Click bonds to draw arrows pointing toward the <span className="text-white font-semibold">more electronegative</span> atom.</p>
+                      <h4 className="font-bold text-white text-sm uppercase">Vector Assignment</h4>
+                      <p className="text-xs text-slate-400 leading-snug">Identify electronegativity differences and assign bond dipoles pointing to the greedy atoms.</p>
                     </div>
                   </div>
                   <div className="flex gap-4">
@@ -247,8 +240,8 @@ const App = () => {
                       <div className="w-0.5 h-full bg-slate-700"></div>
                     </div>
                     <div className="pb-2">
-                      <h4 className="font-bold text-white text-sm">ANALYZE SYMMETRY</h4>
-                      <p className="text-xs text-slate-400 leading-snug">Rotate the 3D structure. Determine if vectors <span className="text-white font-semibold">cancel</span> or form a <span className="text-white font-semibold">net dipole</span>.</p>
+                      <h4 className="font-bold text-white text-sm uppercase">Spatial Analysis</h4>
+                      <p className="text-xs text-slate-400 leading-snug">Assess the 3D geometry. Do these vectors sum to zero, or is there a net dipole imbalance?</p>
                     </div>
                   </div>
                   <div className="flex gap-4">
@@ -256,16 +249,16 @@ const App = () => {
                       <div className="w-8 h-8 rounded-full bg-slate-700 border border-slate-500 flex items-center justify-center font-bold text-yellow-400 text-xs">03</div>
                     </div>
                     <div>
-                      <h4 className="font-bold text-white text-sm">FINAL VERDICT</h4>
-                      <p className="text-xs text-slate-400 leading-snug">Decide: <strong className="text-orange-400 uppercase">Polar</strong> or <strong className="text-cyan-400 uppercase">Non-Polar</strong>?</p>
+                      <h4 className="font-bold text-white text-sm uppercase">Final Verdict</h4>
+                      <p className="text-xs text-slate-400 leading-snug">Classify the molecule as <strong className="text-orange-400">POLAR</strong> or <strong className="text-cyan-400">NON-POLAR</strong>.</p>
                     </div>
                   </div>
                 </div>
               </div>
 
               <button onClick={handleStartGame}
-                className="w-full md:w-auto px-12 py-4 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold text-xl rounded-xl shadow-[0_0_25px_rgba(8,145,178,0.6)] transition-all transform hover:scale-105 active:scale-95 border border-cyan-400/30">
-                INITIATE CHALLENGE
+                className="w-full md:w-auto px-12 py-4 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white font-bold text-xl rounded-xl shadow-[0_0_25px_rgba(79,70,229,0.5)] transition-all transform hover:scale-105 active:scale-95 border border-white/10 uppercase tracking-widest">
+                Start Level 4
               </button>
             </div>
           )}
@@ -275,40 +268,40 @@ const App = () => {
               <div className="flex gap-4 mb-2">
                 <button onClick={() => togglePowerUp('enScanner')}
                   className={`flex items-center gap-2 px-3 py-1 rounded border transition-all ${powerUps.enScanner ? 'bg-green-500/20 border-green-500 text-green-300 shadow-[0_0_10px_rgba(34,197,94,0.3)]' : 'bg-slate-800/80 border-slate-600 text-slate-400'}`}>
-                  <span className="text-lg">📊</span> EN Scanner
+                  <span className="text-lg">📊</span> Scanner
                 </button>
                 <button onClick={() => togglePowerUp('showHint')}
                   className={`flex items-center gap-2 px-3 py-1 rounded border transition-all ${powerUps.showHint ? 'bg-purple-500/20 border-purple-500 text-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.3)]' : 'bg-slate-800/80 border-slate-600 text-slate-400'}`}>
-                  <span className="text-lg">💡</span> Hint
+                  <span className="text-lg">💡</span> Intel
                 </button>
               </div>
               <button onClick={() => { playSfx('click'); setPhase(GamePhase.POLARITY_DECISION); }}
-                className="w-full md:w-auto px-10 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg shadow-lg">
-                Phase 2: Final Verdict &rarr;
+                className="w-full md:w-auto px-10 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg shadow-lg tracking-widest uppercase text-sm">
+                Confirm Dipoles &rarr;
               </button>
             </div>
           )}
 
           {phase === GamePhase.POLARITY_DECISION && (
             <div className="w-full max-w-lg animate-fade-in-up flex flex-col gap-3">
-              <div className="text-center text-slate-200 text-sm drop-shadow-md bg-black/40 backdrop-blur-sm rounded-full py-1 px-4 self-center border border-white/10">
-                Analyze {currentMolecule.name}: Do vectors cancel?
+              <div className="text-center text-slate-200 text-xs drop-shadow-md bg-black/40 backdrop-blur-sm rounded-full py-1 px-4 self-center border border-white/10 tracking-widest uppercase">
+                Analyze {currentMolecule.name}: Symmetry Check
               </div>
               <div className="grid grid-cols-2 gap-4 px-2">
                 <button onClick={() => checkPolarity(true)}
-                  className="p-4 bg-gradient-to-br from-red-500 to-orange-600 rounded-xl font-black text-xl hover:scale-105 transition-transform shadow-lg border border-red-400/30 text-white flex flex-col items-center">
+                  className="p-4 bg-gradient-to-br from-red-600 to-orange-700 rounded-xl font-black text-xl hover:scale-105 transition-transform shadow-lg border border-red-400/30 text-white flex flex-col items-center">
                   POLAR
-                  <span className="text-[10px] font-normal opacity-90 mt-1">Net Dipole Found</span>
+                  <span className="text-[10px] font-normal opacity-90 mt-1 uppercase tracking-tighter">Imbalanced</span>
                 </button>
                 <button onClick={() => checkPolarity(false)}
-                  className="p-4 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl font-black text-xl hover:scale-105 transition-transform shadow-lg border border-cyan-400/30 text-white flex flex-col items-center">
+                  className="p-4 bg-gradient-to-br from-cyan-600 to-indigo-700 rounded-xl font-black text-xl hover:scale-105 transition-transform shadow-lg border border-cyan-400/30 text-white flex flex-col items-center">
                   NON-POLAR
-                  <span className="text-[10px] font-normal opacity-90 mt-1">Perfect Symmetry</span>
+                  <span className="text-[10px] font-normal opacity-90 mt-1 uppercase tracking-tighter">Symmetrical</span>
                 </button>
               </div>
               <button onClick={() => { playSfx('click'); setPhase(GamePhase.BOND_SETUP); }}
-                className="w-full text-center text-slate-400 text-sm mt-1 hover:text-white underline drop-shadow-md">
-                &larr; Refine Dipole Vectors
+                className="w-full text-center text-slate-400 text-[10px] mt-1 hover:text-white underline drop-shadow-md uppercase tracking-widest">
+                &larr; Re-evaluate Vectors
               </button>
             </div>
           )}
@@ -317,12 +310,12 @@ const App = () => {
             <div className="w-full max-w-xs text-center bg-slate-900/85 p-3 rounded-xl border border-slate-700 backdrop-blur-md animate-fade-in-up shadow-2xl mb-1">
               <div className="mb-2">
                   <span className={`text-xl font-black ${currentMolecule.isPolar ? 'text-orange-400' : 'text-cyan-400'}`}>
-                    {currentMolecule.name} is {currentMolecule.isPolar ? 'POLAR' : 'NON-POLAR'}!
+                    {currentMolecule.name}: {currentMolecule.isPolar ? 'POLAR' : 'NON-POLAR'}
                   </span>
               </div>
               <div className={`p-2 rounded-lg mb-2 border min-h-[60px] flex flex-col items-center justify-center gap-1 ${lastGuessCorrect ? 'bg-green-900/20 border-green-500/50' : 'bg-red-900/20 border-red-500/50'}`}>
                 {isLoadingExplanation ? (
-                  <span className="animate-pulse text-slate-500 text-xs">Neural analysis complete...</span>
+                  <span className="animate-pulse text-slate-500 text-[10px] uppercase tracking-widest">Neural link active...</span>
                 ) : explanation ? (
                   <>
                     <div className={`text-lg font-bold ${lastGuessCorrect ? 'text-green-400' : 'text-red-400'}`}>{explanation.remark}</div>
@@ -336,7 +329,7 @@ const App = () => {
                     <span className={`${roundScore.polarity > 0 ? 'text-green-400' : 'text-slate-500'} font-bold`}>+{roundScore.polarity}</span>
                   </div>
                   <div className="flex flex-col items-center">
-                    <span className="uppercase text-[8px]">Bonds</span>
+                    <span className="uppercase text-[8px]">Vectors</span>
                     <span className={`${roundScore.bonds === 50 ? 'text-green-400' : roundScore.bonds > 0 ? 'text-yellow-400' : 'text-slate-500'} font-bold`}>+{roundScore.bonds}</span>
                   </div>
                    <div className="flex flex-col items-center">
@@ -344,20 +337,20 @@ const App = () => {
                     <span className="text-blue-400 font-bold">+{roundScore.time}</span>
                   </div>
                </div>
-              <button onClick={nextLevel} className="w-full py-2 bg-white text-slate-900 font-bold rounded-lg hover:bg-slate-200 transition-colors shadow-lg text-sm">
-                NEXT MISSION &rarr;
+              <button onClick={nextLevel} className="w-full py-2 bg-indigo-500 text-white font-bold rounded-lg hover:bg-indigo-400 transition-colors shadow-lg text-sm uppercase tracking-widest">
+                Next Mission &rarr;
               </button>
             </div>
           )}
 
           {phase === GamePhase.GAME_OVER && (
             <div className="text-center bg-slate-800 p-8 rounded-2xl shadow-2xl border border-slate-700 animate-fade-in-up">
-              <h2 className="text-3xl font-bold mb-2 text-white uppercase tracking-tighter">Mission Success</h2>
+              <h2 className="text-3xl font-bold mb-2 text-white uppercase tracking-tighter">Level 4 Cleared</h2>
               <div className="text-5xl font-black text-yellow-400 mb-6 drop-shadow-md">{score} XP</div>
-              <p className="text-slate-400 mb-8 max-w-xs mx-auto text-sm">You have mastered the polarities of the known universe.</p>
+              <p className="text-slate-400 mb-8 max-w-xs mx-auto text-sm">Molecular symmetry protocols fully analyzed.</p>
               <button onClick={handleStartGame}
-                className="px-8 py-3 bg-cyan-600 text-white font-bold rounded-lg hover:bg-cyan-500 transition-colors shadow-lg uppercase tracking-wider">
-                Re-Deploy
+                className="px-8 py-3 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-500 transition-colors shadow-lg uppercase tracking-wider">
+                Re-Deploy to Level 4
               </button>
             </div>
           )}

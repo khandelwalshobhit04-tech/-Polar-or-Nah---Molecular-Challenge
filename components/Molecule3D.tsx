@@ -196,7 +196,7 @@ const ResultantDipole = ({ molecule }: { molecule: MoleculeData }) => {
         <meshStandardMaterial color="#fbbf24" emissive="#f59e0b" emissiveIntensity={2} />
       </Cone>
       <Html position={[1, 1.5, 0]} center>
-        <div className="bg-yellow-500/80 text-black px-2 py-1 rounded font-bold whitespace-nowrap backdrop-blur-md">
+        <div className="bg-yellow-500/80 text-black px-2 py-1 rounded font-bold whitespace-nowrap backdrop-blur-md text-[10px] border border-yellow-400/50">
           NET DIPOLE
         </div>
       </Html>
@@ -262,10 +262,9 @@ export default function Molecule3D({
       <ambientLight intensity={0.6} />
       <pointLight position={[10, 10, 10]} intensity={1} />
       
-      {/* 3D LABEL FOR THE MOLECULE */}
       <Html position={[0, 3, 0]} center>
-         <div className="bg-white/10 backdrop-blur-md border border-white/20 px-3 py-1 rounded-full text-white font-bold text-xs pointer-events-none select-none uppercase tracking-widest whitespace-nowrap">
-           {molecule.name} • {molecule.formula}
+         <div className="bg-slate-900/40 backdrop-blur-lg border border-white/10 px-4 py-1.5 rounded-full text-white font-black text-[10px] pointer-events-none select-none uppercase tracking-[0.2em] whitespace-nowrap shadow-xl">
+           {molecule.name} • <span className="text-cyan-400">{molecule.formula}</span>
          </div>
       </Html>
 
